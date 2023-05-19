@@ -1,0 +1,82 @@
+<project>
+
+    <property name="ant.project.name" value="Main" />
+
+    <property name="lib.dir" value="lib" />
+    <property name="src.dir" value="src" />
+    <property name="test.dir" value="test" />
+
+    <property name="build.dir" value="build" />
+    <property name="testbuild.dir" value="testbuild" />
+
+    <property name="classes.dir" value="${build.dir}/classes" />
+    <property name="classes-test.dir" value="${testbuild.dir}/classes" />
+    <property name="jar.dir" value="${build.dir}/jar" />
+    <property name="jar-test.dir" value="${testbuild.dir}/jar" />
+
+    <property name="main-class" value="src.Main" />
+    <property name="test-class" value="test.Test" />
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar" />
+    </path>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+        <delete dir="${testbuild.dir}" />
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+    </target>
+
+    <target name="compile-test">
+        <mkdir dir="${classes-test.dir}" />
+        <javac srcdir="${src.dir}/compilerdeps" destdir="${classes-test.dir}" classpathref="classpath" />
+        <javac srcdir="${test.dir}" destdir="${classes-test.dir}" classpathref="classpath" />
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}" />
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jar-test" depends="compile-test">
+        <mkdir dir="${jar-test.dir}" />
+        <jar destfile="${jar-test.dir}/${ant.project.name}.jar" basedir="${classes-test.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${test-class}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+        <java fork="true" classname="${main-class}">
+            <classpath>
+                <path refid="classpath" />
+                <path location="${jar.dir}/${ant.project.name}.jar" />
+            </classpath>
+        </java>
+    </target>
+
+    <target name="test" depends="jar-test">
+        <java fork="true" classname="${test-class}">
+            <classpath>
+                <path refid="classpath" />
+                <path location="${jar-test.dir}/${ant.project.name}.jar" />
+            </classpath>
+        </java>
+    </target>
+
+    <target name="clean-build" depends="clean,jar" />
+
+    <target name="main" depends="clean,run" />
+
+
+</project>
