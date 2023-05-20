@@ -463,16 +463,62 @@ public class Test {
                 }
             },
 
-            new UnitTest("Sort the csv file by column") {
+            new UnitTest("Sort the csv file by column (Integer)") {
                 public void testFunction() {
                     try {
                         Csvruntime csvData = importCSV("sort.csv");
+
+                        Csvruntime sortedCsvData = csvData.sort("Numbers");
+
+                        String Value = sortedCsvData.getValueAt("Strings", 0);
+
+                        if (Value.equals("Soda")) 
+                        {
+                            testPass = true;
+                        }
                     } catch (Exception e) {
                         testPass = false;
                     }
                 }
-            }
+            },
 
+            new UnitTest("Sort the csv file by column (Strings)") {
+                public void testFunction() {
+                    try {
+                        Csvruntime csvData = importCSV("sort.csv");
+
+                        Csvruntime sortedCsvData = csvData.sort("Strings");
+
+                        int Value = sortedCsvData.getValueAt("Numbers", 2);
+
+                        if (Value == 3) 
+                        {
+                            testPass = true;
+                        }
+                    } catch (Exception e) {
+                        testPass = false;
+                    }
+                }
+            },
+
+            new UnitTest("Sort the csv file by column descending (Integer)") {
+                public void testFunction() {
+                    try {
+                        Csvruntime csvData = importCSV("sort.csv");
+
+                        Csvruntime sortedCsvData = csvData.sort("Numbers", true);
+
+                        int Value = sortedCsvData.getValueAt("Numbers", 0);
+
+                        if (Value == 19) 
+                        {
+                            testPass = true;
+                        }
+                    } catch (Exception e) {
+                        testPass = false;
+                    }
+                }
+            },
     };
 
     public static Csvruntime importCSV(String path) {

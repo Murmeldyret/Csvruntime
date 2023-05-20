@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +41,9 @@ public class Csvruntime {
     }
 
     public Csvruntime(Csvruntime csv) {
-        this.csvData = csv.csvData;
-        this.columnTypes = csv.columnTypes;
-        this.header = csv.header;
+        this.csvData = new ArrayList<ArrayList<String>>(csv.csvData);
+        this.columnTypes = new ArrayList<TypeChecker>(csv.columnTypes);
+        this.header = new ArrayList<String>(csv.header);
     }
 
     public Csvruntime(ArrayList<ArrayList<String>> csv, ArrayList<String> header, ArrayList<TypeChecker>... types) {
@@ -342,18 +343,40 @@ public class Csvruntime {
         return csvData.size();
     }
 
-    public Csvruntime sort(String header, boolean isDecending) {
+    public <T> Csvruntime sort(String header, boolean... isDecending) {
         Csvruntime sortedCsvruntime = new Csvruntime(this);
+
+        int orderMultiplier = isDecending.length > 0 ? isDecending[0] == true ? -1 : 1 : 1;
 
         int index = sortedCsvruntime.searchHeaderIndex(header);
 
-        
+        Class<T> type = getType(index);
+
+        Collections.sort(sortedCsvruntime.csvData, new Comparator<ArrayList<String>>() {
+            public int compare(ArrayList<String> a, ArrayList<String> b) {
+                switch (type.getSimpleName()) {
+                    case "Integer":
+                        return Integer.compare((int) ObjectConverter.convert(a.get(index), type),
+                                (int) ObjectConverter.convert(b.get(index), type)) * orderMultiplier;
+
+                    case "Double":
+                        return Double.compare((double) ObjectConverter.convert(a.get(index), type),
+                                (double) ObjectConverter.convert(b.get(index), type)) * orderMultiplier;
+
+                    case "Boolean":
+                        return Boolean.compare((Boolean) ObjectConverter.convert(a.get(index), type),
+                                (Boolean) ObjectConverter.convert(b.get(index), type)) * orderMultiplier;
+
+                    case "Character":
+                        return Character.compare((Character) ObjectConverter.convert(a.get(index), type),
+                                (Character) ObjectConverter.convert(b.get(index), type)) * orderMultiplier;
+                    default:
+                        return a.get(index).compareTo(b.get(index)) * orderMultiplier;
+                }
+            }
+        });
 
         return sortedCsvruntime;
-    }
-
-    private <E> int compare(E a, E b) {
-        
     }
 
     private ArrayList<ArrayList<String>> readLineByLine(Path filePath) throws Exception {
