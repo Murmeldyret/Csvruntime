@@ -385,6 +385,39 @@ public class Csvruntime {
         return sortedCsvruntime;
     }
 
+    public static <E extends Number> E add(E x, E y) {
+
+        if (x == null || y == null) {
+            return null;
+        }
+
+        if (x instanceof Double) {
+            return (E) Double.valueOf(x.doubleValue() + y.doubleValue());
+        } else if (x instanceof Integer) {
+            return (E) Integer.valueOf(x.intValue() + y.intValue());
+        } else {
+            throw new IllegalArgumentException("Type " + x.getClass() + " is not supported by this method");
+        }
+    }
+
+    public <T> Csvruntime filter(String columnHeader, Filter<T> comparer) {
+
+        ArrayList<ArrayList<String>> Data = new ArrayList<ArrayList<String>>();
+
+        ArrayList<T> operationalColumn = getColumn(columnHeader);
+
+        for (int i = 0; i < count(); i++) {
+            if(comparer.compare(operationalColumn.get(i)))
+            {
+                Data.add(csvData.get(i));
+            }
+        }
+
+
+
+        return new Csvruntime(Data, header, columnTypes);
+    }
+
     private ArrayList<ArrayList<String>> readLineByLine(Path filePath) throws Exception {
         ArrayList<ArrayList<String>> list = new ArrayList<>();
         try (Reader reader = Files.newBufferedReader(filePath)) {
@@ -430,39 +463,6 @@ public class Csvruntime {
                 }
             }
         }
-    }
-
-    public static <E extends Number> E add(E x, E y) {
-
-        if (x == null || y == null) {
-            return null;
-        }
-
-        if (x instanceof Double) {
-            return (E) Double.valueOf(x.doubleValue() + y.doubleValue());
-        } else if (x instanceof Integer) {
-            return (E) Integer.valueOf(x.intValue() + y.intValue());
-        } else {
-            throw new IllegalArgumentException("Type " + x.getClass() + " is not supported by this method");
-        }
-    }
-
-    public <T> Csvruntime filter(String columnHeader, Filter<T> comparer) {
-
-        ArrayList<ArrayList<String>> Data = new ArrayList<ArrayList<String>>();
-
-        ArrayList<T> operationalColumn = getColumn(columnHeader);
-
-        for (int i = 0; i < count(); i++) {
-            if(comparer.compare(operationalColumn.get(i)))
-            {
-                Data.add(csvData.get(i));
-            }
-        }
-
-
-
-        return new Csvruntime(Data, header, columnTypes);
     }
 
 }
