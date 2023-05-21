@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.sound.sampled.AudioFileFormat.Type;
+import javax.swing.text.html.parser.Element;
 
 import com.opencsv.*;
 import com.opencsv.CSVReaderHeaderAware;
@@ -149,8 +150,8 @@ public class Csvruntime {
         }
     }
 
-    interface Filter {
-        Boolean compare(T a, T b)
+    public interface Filter<T> {
+        Boolean compare(T entry);
     }
 
     public <T> T getValueAt(String column, int row) {
@@ -446,8 +447,22 @@ public class Csvruntime {
         }
     }
 
-    public <T> Csvruntime filter(String columnHeader, Callable<T> func) {
-        return this;
+    public <T> Csvruntime filter(String columnHeader, Filter<T> comparer) {
+
+        ArrayList<ArrayList<String>> Data = new ArrayList<ArrayList<String>>();
+
+        ArrayList<T> operationalColumn = getColumn(columnHeader);
+
+        for (int i = 0; i < count(); i++) {
+            if(comparer.compare(operationalColumn.get(i)))
+            {
+                Data.add(csvData.get(i));
+            }
+        }
+
+
+
+        return new Csvruntime(Data, header, columnTypes);
     }
 
 }

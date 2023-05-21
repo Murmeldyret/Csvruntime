@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 
 import src.compilerdeps.Csvruntime;
+import src.compilerdeps.Csvruntime.Filter;
 
 public class Test {
     public static void main(String[] args) {
@@ -453,8 +455,7 @@ public class Test {
 
                         Csvruntime csvData2 = new Csvruntime(csvData.getData(), csvData.getHeader());
 
-                        if ((int)csvData2.getValueAt("Number", 0) == 1)
-                        {
+                        if ((int) csvData2.getValueAt("Number", 0) == 1) {
                             testPass = true;
                         }
                     } catch (Exception e) {
@@ -472,8 +473,7 @@ public class Test {
 
                         String Value = sortedCsvData.getValueAt("Strings", 0);
 
-                        if (Value.equals("Soda")) 
-                        {
+                        if (Value.equals("Soda")) {
                             testPass = true;
                         }
                     } catch (Exception e) {
@@ -491,8 +491,7 @@ public class Test {
 
                         int Value = sortedCsvData.getValueAt("Numbers", 2);
 
-                        if (Value == 3) 
-                        {
+                        if (Value == 3) {
                             testPass = true;
                         }
                     } catch (Exception e) {
@@ -510,8 +509,7 @@ public class Test {
 
                         int Value = sortedCsvData.getValueAt("Numbers", 0);
 
-                        if (Value == 19) 
-                        {
+                        if (Value == 19) {
                             testPass = true;
                         }
                     } catch (Exception e) {
@@ -519,6 +517,29 @@ public class Test {
                     }
                 }
             },
+
+            new UnitTest("Filter the list for an entry in a column") {
+                public void testFunction() {
+                    try {
+                        Csvruntime csvData = importCSV("cars.csv");
+
+                        Csvruntime filteredCsvData = csvData.filter("Brand", new Filter<String>() {
+
+                            @Override
+                            public Boolean compare(String entry) {
+                                return entry.equals("BMW");
+                            }
+
+                        });
+
+                        if (filteredCsvData.count() == 2) {
+                            testPass = true;
+                        }
+                    } catch (Exception e) {
+                        testPass = false;
+                    }
+                }
+            }
     };
 
     public static Csvruntime importCSV(String path) {
