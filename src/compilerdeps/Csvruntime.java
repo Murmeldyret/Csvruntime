@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.sound.sampled.AudioFileFormat.Type;
 
@@ -47,11 +48,11 @@ public class Csvruntime {
     }
 
     public Csvruntime(ArrayList<ArrayList<String>> csv, ArrayList<String> header, ArrayList<TypeChecker>... types) {
-        this.csvData = csv;
-        this.header = header;
+        this.csvData = new ArrayList<ArrayList<String>>(csv);
+        this.header = new ArrayList<String>(header);
 
         if (types.length > 0) {
-            this.columnTypes = types[0];
+            this.columnTypes = new ArrayList<TypeChecker>(types[0]);
         } else {
             defineTypes();
         }
@@ -146,6 +147,10 @@ public class Csvruntime {
             }
             return total;
         }
+    }
+
+    interface Filter {
+        Boolean compare(T a, T b)
     }
 
     public <T> T getValueAt(String column, int row) {
@@ -439,6 +444,10 @@ public class Csvruntime {
         } else {
             throw new IllegalArgumentException("Type " + x.getClass() + " is not supported by this method");
         }
+    }
+
+    public <T> Csvruntime filter(String columnHeader, Callable<T> func) {
+        return this;
     }
 
 }
