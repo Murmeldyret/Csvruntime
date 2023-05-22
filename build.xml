@@ -21,6 +21,21 @@
         <fileset dir="${lib.dir}" includes="**/*.jar" />
     </path>
 
+    <path id="build.classpath">
+        <fileset dir="${classes.dir}/">
+            <include name="${lib.dir}/*.jar" />
+        </fileset>
+    </path>
+
+    <pathconvert property="mf.classpath" pathsep=" ">
+        <path refid="build.classpath" />
+        <mapper>
+            <chainedmapper>
+                <flattenmapper />
+                <globmapper from="*.jar" to="lib/*.jar" />
+            </chainedmapper>
+        </mapper>
+    </pathconvert>
 
     <target name="clean">
         <delete dir="${build.dir}" />
@@ -34,18 +49,20 @@
 
     <target name="compile-test">
         <mkdir dir="${classes-test.dir}" />
-        <javac srcdir="${src.dir}/compilerdeps" destdir="${classes-test.dir}" classpathref="classpath" />
+        <javac srcdir="${src.dir}/compilerdeps" destdir="${classes-test.dir}"
+            classpathref="classpath" />
         <javac srcdir="${test.dir}" destdir="${classes-test.dir}" classpathref="classpath" />
     </target>
 
     <target name="jar" depends="compile">
         <mkdir dir="${jar.dir}" />
-        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+        <jar destfile="${build.dir}/lib.jar" basedir="${classes.dir}" filesetmanifest="skip">
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar" />
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar" excludes="" />
+
             <manifest>
-                <attribute name="Main-Class" value="${main-class}" />
-                <attribute name="Class-Path" value="${lib.dir}" />
+                <attribute name="Class-Path" value="${mf.classpath}" />
             </manifest>
-            <fileset dir="${lib.dir}" />
         </jar>
     </target>
 
@@ -55,6 +72,7 @@
             <manifest>
                 <attribute name="Main-Class" value="${test-class}" />
             </manifest>
+
         </jar>
     </target>
 
