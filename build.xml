@@ -29,7 +29,7 @@
 
     <target name="compile">
         <mkdir dir="${classes.dir}" />
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+        <javac srcdir="${src.dir}/compilerdeps" destdir="${classes.dir}" classpathref="classpath" />
     </target>
 
     <target name="compile-test">
@@ -45,6 +45,7 @@
                 <attribute name="Main-Class" value="${main-class}" />
                 <attribute name="Class-Path" value="${lib.dir}" />
             </manifest>
+            <fileset dir="${lib.dir}" />
         </jar>
     </target>
 

@@ -28,7 +28,7 @@ public class Csvruntime {
     private ArrayList<TypeChecker> columnTypes = new ArrayList<TypeChecker>();
     private ArrayList<String> header = new ArrayList<String>();
 
-    public Csvruntime(String pathString) throws IOException {
+    public Csvruntime(String pathString) {
         Path path;
 
         try {
@@ -36,7 +36,7 @@ public class Csvruntime {
 
             csvData = readLineByLine(path);
         } catch (Exception e) {
-            throw new IOException("Wrong path", e);
+            e.printStackTrace();
         }
 
         defineTypes();
