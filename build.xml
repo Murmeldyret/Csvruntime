@@ -21,53 +21,36 @@
         <fileset dir="${lib.dir}" includes="**/*.jar" />
     </path>
 
-    <path id="build.classpath">
-        <fileset dir="${classes.dir}/">
-            <include name="${lib.dir}/*.jar" />
-        </fileset>
-    </path>
-
-    <pathconvert property="mf.classpath" pathsep=" ">
-        <path refid="build.classpath" />
-        <mapper>
-            <chainedmapper>
-                <flattenmapper />
-                <globmapper from="*.jar" to="lib/*.jar" />
-            </chainedmapper>
-        </mapper>
-    </pathconvert>
-
     <target name="clean">
         <delete dir="${build.dir}" />
         <delete dir="${testbuild.dir}" />
     </target>
 
-    <target name="compile">
+    <target name="init">
         <mkdir dir="${classes.dir}" />
+        <mkdir dir="${classes-test.dir}" />
+        <mkdir dir="${jar.dir}" />
+        <mkdir dir="${jar-test.dir}" />
+    </target>
+
+    <target name="compile" depends="init">
         <javac srcdir="${src.dir}/compilerdeps" destdir="${classes.dir}" classpathref="classpath" />
     </target>
 
-    <target name="compile-test">
-        <mkdir dir="${classes-test.dir}" />
+    <target name="compile-test" depends="init" >
         <javac srcdir="${src.dir}/compilerdeps" destdir="${classes-test.dir}"
             classpathref="classpath" />
         <javac srcdir="${test.dir}" destdir="${classes-test.dir}" classpathref="classpath" />
     </target>
 
     <target name="jar" depends="compile">
-        <mkdir dir="${jar.dir}" />
         <jar destfile="${build.dir}/lib.jar" basedir="${classes.dir}" filesetmanifest="skip">
             <zipgroupfileset dir="${lib.dir}" includes="*.jar" />
             <zipgroupfileset dir="${lib.dir}" includes="*.jar" excludes="" />
-
-            <manifest>
-                <attribute name="Class-Path" value="${mf.classpath}" />
-            </manifest>
         </jar>
     </target>
 
     <target name="jar-test" depends="compile-test">
-        <mkdir dir="${jar-test.dir}" />
         <jar destfile="${jar-test.dir}/${ant.project.name}.jar" basedir="${classes-test.dir}">
             <manifest>
                 <attribute name="Main-Class" value="${test-class}" />
