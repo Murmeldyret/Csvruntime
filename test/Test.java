@@ -539,6 +539,23 @@ public class Test {
                         testPass = false;
                     }
                 }
+            },
+
+            new UnitTest("Export the csv file") {
+                public void testFunction() {
+                    try {
+                        Csvruntime csvData = importCSV("cars.csv");
+
+                        csvData.addRow(new String[] {"Peugeot","RS","191"});
+
+                        csvData.export("cars2.csv");
+
+                        testPass = true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        testPass = false;
+                    }
+                }
             }
     };
 

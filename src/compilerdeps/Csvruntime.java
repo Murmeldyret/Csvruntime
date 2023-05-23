@@ -2,6 +2,7 @@ package src.compilerdeps;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.FileSystems;
@@ -407,15 +408,36 @@ public class Csvruntime {
         ArrayList<T> operationalColumn = getColumn(columnHeader);
 
         for (int i = 0; i < count(); i++) {
-            if(comparer.compare(operationalColumn.get(i)))
-            {
+            if (comparer.compare(operationalColumn.get(i))) {
                 Data.add(csvData.get(i));
             }
         }
 
-
-
         return new Csvruntime(Data, header, columnTypes);
+    }
+
+    public void export(String pathString) {
+        ArrayList<String[]> lines = new ArrayList<String[]>();
+
+        lines.add(header.toArray(new String[0]));
+        Path path = FileSystems.getDefault().getPath(pathString);
+
+        for (ArrayList<String> csvDataLine : csvData) {
+            lines.add(csvDataLine.toArray(new String[0]));
+        }
+
+        try {
+            writeAllLines(lines, path);
+        } catch (Exception e) {
+            System.out.println("Could not write the file");
+            e.printStackTrace();
+        }
+    }
+
+    private void writeAllLines(List<String[]> lines, Path path) throws Exception {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(path.toString()))) {
+            writer.writeAll(lines);
+        }
     }
 
     private ArrayList<ArrayList<String>> readLineByLine(Path filePath) throws Exception {
