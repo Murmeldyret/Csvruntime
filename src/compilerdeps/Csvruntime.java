@@ -162,12 +162,18 @@ public class Csvruntime {
         return csvData;
     }
 
-    public void addRow(String[] list, int... iparameter) throws Exception {
+    public void addRow(ArrayList<String> list, int...iparameter) {
+        int index = iparameter.length > 0 ? iparameter[0] : csvData.size();
+
+        addRow(list.toArray(new String[0]), index);
+    }
+
+    public void addRow(String[] list, int... iparameter) {
         int index = iparameter.length > 0 ? iparameter[0] : csvData.size();
 
         // Compare the lenght of the new row with a row from the csv.
         if (list.length != header.size()) {
-            throw new Exception("Incorrect lenght");
+            throw new RuntimeException("Incorrect lenght");
         }
 
         // Check the type and see if it fits the csv.
@@ -185,7 +191,7 @@ public class Csvruntime {
         // Compare the types of the csv with the types of the new row.
         for (int i = 0; i < listTypeCheckers.size(); i++) {
             if (!(listTypeCheckers.get(i).type.equals(columnTypes.get(i).type))) {
-                throw new Exception("Incorrect type");
+                throw new RuntimeException("Incorrect type");
             }
         }
 
@@ -223,7 +229,7 @@ public class Csvruntime {
         int csvLenght = csvData.size();
 
         if (columnList.size() != csvLenght) {
-            throw new Exception("Incorrect collumn length");
+            throw new RuntimeException("Incorrect collumn length");
         }
 
         // Find type of the list
@@ -273,7 +279,7 @@ public class Csvruntime {
         removeColumn(header.size() - 1);
     }
 
-    public void insertRow(int index, String[] list) throws Exception {
+    public void insertRow(int index, String[] list) {
         addRow(list, index);
     }
 
