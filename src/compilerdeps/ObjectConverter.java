@@ -227,4 +227,12 @@ public final class ObjectConverter {
         return (double) value;
     }
 
+    public static Character stringToChar(String value) {
+        return value.charAt(0);
+    }
+
+    public static String charToString(Character value) {
+        return value.toString();
+    }
+
 }
