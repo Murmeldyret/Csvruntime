@@ -436,7 +436,7 @@ public class Csvruntime {
 
     private void writeAllLines(List<String[]> lines, Path path) throws Exception {
         try (CSVWriter writer = new CSVWriter(new FileWriter(path.toString()))) {
-            writer.writeAll(lines);
+            writer.writeAll(lines, false);
         }
     }
 
