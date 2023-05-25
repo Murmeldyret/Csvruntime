@@ -117,7 +117,7 @@ public class Csvruntime {
 
             new TypeChecker(String.class) {
                 public boolean check(String s) {
-                    if (s.length() == 1) {
+                    if (s.length() == 0) {
                         return false;
                     }
                     return true;
